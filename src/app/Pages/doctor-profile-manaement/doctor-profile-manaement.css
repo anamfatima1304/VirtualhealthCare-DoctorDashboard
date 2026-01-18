@@ -1,0 +1,659 @@
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.loading-spinner i {
+  font-size: 3rem;
+  color: var(--color-sky-blue);
+  margin-bottom: 1rem;
+}
+
+.loading-spinner p {
+  color: var(--color-dark-blue);
+  font-size: 1.1rem;
+}
+
+/* Header Section */
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.back-btn {
+  background: white;
+  border: 1px solid var(--color-medium-blue);
+  color: var(--color-medium-blue);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.back-btn:hover {
+  background: var(--color-medium-blue);
+  color: white;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-cancel,
+.btn-save {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  border: none;
+}
+
+.btn-cancel {
+  background: white;
+  border: 1px solid var(--color-gray-medium);
+  color: var(--color-gray-medium);
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #f8f9fa;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, var(--color-sky-blue), var(--color-medium-blue));
+  color: white;
+}
+
+.btn-save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(111, 163, 216, 0.4);
+}
+
+.btn-cancel:disabled,
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Main Content Grid */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+/* Doctor Info Section */
+.doctor-info-section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+/* Profile Image with Upload */
+.doctor-image-wrapper {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+}
+
+.doctor-profile-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid var(--color-light-blue);
+}
+
+.image-upload-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--color-sky-blue);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 3px solid white;
+}
+
+.image-upload-overlay:hover {
+  background: var(--color-medium-blue);
+  transform: scale(1.1);
+}
+
+.image-upload-overlay i {
+  color: white;
+  font-size: 1.2rem;
+}
+
+/* Editable Fields */
+.editable-field {
+  margin-bottom: 8px;
+}
+
+.doctor-name-input {
+  width: 100%;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-navy-blue);
+  border: none;
+  border-bottom: 2px solid transparent;
+  text-align: center;
+  padding: 5px 10px;
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.doctor-name-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-sky-blue);
+  background: rgba(164, 200, 225, 0.05);
+}
+
+.doctor-specialty {
+  font-size: 1.1rem;
+  color: var(--color-medium-blue);
+  font-weight: 500;
+  margin: 0 0 20px 0;
+  text-align: center;
+  padding: 5px;
+  background: rgba(164, 200, 225, 0.1);
+  border-radius: 6px;
+}
+
+/* Quick Info */
+.quick-info {
+  margin-bottom: 25px;
+}
+
+.info-item {
+  margin-bottom: 12px;
+  color: var(--color-dark-blue);
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(164, 200, 225, 0.1);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-item strong {
+  color: var(--color-navy-blue);
+  font-weight: 600;
+  min-width: 140px;
+}
+
+.info-input {
+  flex: 1;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 5px 10px;
+  font-size: 0.95rem;
+  color: var(--color-dark-blue);
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.info-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-sky-blue);
+  background: rgba(164, 200, 225, 0.05);
+}
+
+/* About Section */
+.about-section {
+  padding-top: 20px;
+  border-top: 1px solid rgba(164, 200, 225, 0.3);
+}
+
+.about-section h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-navy-blue);
+  margin: 0 0 15px 0;
+}
+
+.bio-textarea {
+  width: 100%;
+  border: 1px solid rgba(164, 200, 225, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.95rem;
+  color: var(--color-dark-blue);
+  line-height: 1.6;
+  resize: vertical;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.bio-textarea:focus {
+  outline: none;
+  border-color: var(--color-sky-blue);
+  background: rgba(164, 200, 225, 0.02);
+}
+
+/* Timings Section */
+.timings-section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+.timings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-navy-blue);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title i {
+  color: var(--color-sky-blue);
+}
+
+.btn-edit-timings {
+  background: var(--color-sky-blue);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+}
+
+.btn-edit-timings:hover {
+  background: var(--color-medium-blue);
+  transform: translateY(-1px);
+}
+
+.timings-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-cancel-timings,
+.btn-save-timings {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn-cancel-timings {
+  background: white;
+  border: 1px solid var(--color-gray-medium);
+  color: var(--color-gray-medium);
+}
+
+.btn-cancel-timings:hover:not(:disabled) {
+  background: #f8f9fa;
+}
+
+.btn-save-timings {
+  background: var(--color-sky-blue);
+  color: white;
+}
+
+.btn-save-timings:hover:not(:disabled) {
+  background: var(--color-medium-blue);
+  transform: translateY(-1px);
+}
+
+.btn-cancel-timings:disabled,
+.btn-save-timings:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* VIEW MODE - Schedule List */
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(164, 200, 225, 0.2);
+}
+
+.schedule-item:last-child {
+  border-bottom: none;
+}
+
+.schedule-item.unavailable {
+  opacity: 0.6;
+}
+
+.day-label {
+  font-weight: 600;
+  color: var(--color-navy-blue);
+  width: 100px;
+  flex-shrink: 0;
+  font-size: 0.95rem;
+}
+
+.timing-info {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.available-times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.time-slot {
+  background: rgba(164, 200, 225, 0.15);
+  color: var(--color-dark-blue);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid rgba(164, 200, 225, 0.3);
+}
+
+.unavailable-text {
+  color: var(--color-gray-medium);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* EDIT MODE - Schedule List */
+.schedule-list-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.schedule-item-edit {
+  border: 1px solid rgba(164, 200, 225, 0.2);
+  border-radius: 8px;
+  padding: 15px;
+  transition: all 0.3s ease;
+}
+
+.schedule-item-edit.has-slots {
+  border-color: var(--color-light-blue);
+  background: rgba(164, 200, 225, 0.02);
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.day-label {
+  font-weight: 600;
+  color: var(--color-navy-blue);
+  font-size: 1rem;
+}
+
+.btn-add-slot {
+  background: var(--color-sky-blue);
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.btn-add-slot:hover {
+  background: var(--color-medium-blue);
+  transform: scale(1.1);
+}
+
+.timing-info {
+  padding-left: 0;
+}
+
+.time-slots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.time-slot-edit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(164, 200, 225, 0.08);
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(164, 200, 225, 0.2);
+}
+
+.time-inputs {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-input {
+  flex: 1;
+  border: 1px solid rgba(164, 200, 225, 0.3);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: var(--color-dark-blue);
+  transition: all 0.3s ease;
+}
+
+.time-input:focus {
+  outline: none;
+  border-color: var(--color-sky-blue);
+  background: white;
+}
+
+.time-separator {
+  color: var(--color-medium-blue);
+  font-weight: 500;
+}
+
+.btn-remove-slot {
+  background: transparent;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.btn-remove-slot:hover {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+/* Error State */
+.error-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.error-content {
+  text-align: center;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-content i {
+  font-size: 3rem;
+  color: var(--color-light-blue);
+  margin-bottom: 15px;
+}
+
+.error-content h3 {
+  color: var(--color-dark-blue);
+  margin-bottom: 8px;
+}
+
+.error-content p {
+  color: var(--color-medium-blue);
+  margin-bottom: 20px;
+}
+
+.btn-back {
+  background: var(--color-medium-blue);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+  background: var(--color-dark-blue);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 15px;
+  }
+
+  .main-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    justify-content: stretch;
+  }
+
+  .btn-cancel,
+  .btn-save {
+    flex: 1;
+  }
+
+  .doctor-info-section,
+  .timings-section {
+    padding: 20px;
+  }
+
+  .doctor-name-input {
+    font-size: 1.5rem;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .info-input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .doctor-profile-image,
+  .image-container {
+    width: 120px;
+    height: 120px;
+  }
+
+  .schedule-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .timing-info {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .time-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .time-separator {
+    text-align: center;
+  }
+}

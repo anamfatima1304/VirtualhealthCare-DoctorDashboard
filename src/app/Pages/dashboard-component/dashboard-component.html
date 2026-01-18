@@ -1,0 +1,235 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="header-content">
+        <div class="welcome-section">
+          <h1 class="welcome-title">
+            <i class="fas fa-user-md"></i>
+            Welcome, {{ doctorData?.doctorName || 'Doctor' }}
+          </h1>
+          <p class="welcome-subtitle">Manage your appointments and patient care</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-profile" (click)="goToProfile()">
+            <i class="fas fa-user-circle"></i>
+            Profile
+          </button>
+          <button class="btn-logout" (click)="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+  
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading dashboard...</p>
+    </div>
+  
+    <div *ngIf="!loading">
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card total">
+          <div class="stat-icon">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <div class="stat-info">
+            <h3 class="stat-value">{{ stats.total }}</h3>
+            <p class="stat-label">Total Appointments</p>
+          </div>
+        </div>
+  
+        <div class="stat-card pending">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-info">
+            <h3 class="stat-value">{{ stats.pending }}</h3>
+            <p class="stat-label">Pending</p>
+          </div>
+        </div>
+  
+        <div class="stat-card confirmed">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3 class="stat-value">{{ stats.confirmed }}</h3>
+            <p class="stat-label">Confirmed</p>
+          </div>
+        </div>
+  
+        <div class="stat-card completed">
+          <div class="stat-icon">
+            <i class="fas fa-check-double"></i>
+          </div>
+          <div class="stat-info">
+            <h3 class="stat-value">{{ stats.completed }}</h3>
+            <p class="stat-label">Completed</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Filters -->
+      <div class="filters-section">
+        <div class="filter-group">
+          <label>Filter by Status:</label>
+          <div class="filter-buttons">
+            <button 
+              [class.active]="selectedFilter === 'all'" 
+              (click)="setFilter('all')"
+              class="filter-btn"
+            >
+              All
+            </button>
+            <button 
+              [class.active]="selectedFilter === 'today'" 
+              (click)="setFilter('today')"
+              class="filter-btn"
+            >
+              Today
+            </button>
+            <button 
+              [class.active]="selectedFilter === 'pending'" 
+              (click)="setFilter('pending')"
+              class="filter-btn"
+            >
+              Pending
+            </button>
+            <button 
+              [class.active]="selectedFilter === 'confirmed'" 
+              (click)="setFilter('confirmed')"
+              class="filter-btn"
+            >
+              Confirmed
+            </button>
+            <button 
+              [class.active]="selectedFilter === 'completed'" 
+              (click)="setFilter('completed')"
+              class="filter-btn"
+            >
+              Completed
+            </button>
+          </div>
+        </div>
+  
+        <div class="filter-group">
+          <label>Filter by Priority:</label>
+          <div class="filter-buttons">
+            <button 
+              [class.active]="selectedPriority === 'all'" 
+              (click)="setPriorityFilter('all')"
+              class="filter-btn"
+            >
+              All
+            </button>
+            <button 
+              [class.active]="selectedPriority === 'high'" 
+              (click)="setPriorityFilter('high')"
+              class="filter-btn priority-high"
+            >
+              High
+            </button>
+            <button 
+              [class.active]="selectedPriority === 'medium'" 
+              (click)="setPriorityFilter('medium')"
+              class="filter-btn priority-medium"
+            >
+              Medium
+            </button>
+            <button 
+              [class.active]="selectedPriority === 'low'" 
+              (click)="setPriorityFilter('low')"
+              class="filter-btn priority-low"
+            >
+              Low
+            </button>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Appointments List -->
+      <div class="appointments-section">
+        <h2 class="section-title">
+          <i class="fas fa-calendar-alt"></i>
+          Appointments ({{ filteredAppointments.length }})
+        </h2>
+  
+        <div class="appointments-grid">
+          <div 
+            *ngFor="let appointment of filteredAppointments" 
+            class="appointment-card"
+            [class]="getStatusClass(appointment.status)"
+          >
+            <div class="appointment-header">
+              <div class="patient-info">
+                <h3 class="patient-name">
+                  <i class="fas fa-user"></i>
+                  {{ appointment.patientName }}
+                </h3>
+                <span [class]="getPriorityClass(appointment.priority)" class="priority-badge">
+                  {{ appointment.priority | uppercase }}
+                </span>
+              </div>
+              <span [class]="getStatusClass(appointment.status)" class="status-badge">
+                {{ appointment.status | uppercase }}
+              </span>
+            </div>
+  
+            <div class="appointment-details">
+              <div class="detail-item">
+                <i class="fas fa-calendar"></i>
+                <span>{{ formatDate(appointment.appointmentDate) }}</span>
+              </div>
+              <div class="detail-item">
+                <i class="fas fa-clock"></i>
+                <span>{{ formatTime(appointment.appointmentTime) }}</span>
+              </div>
+              <div class="detail-item">
+                <i class="fas fa-phone"></i>
+                <span>{{ appointment.patientPhone }}</span>
+              </div>
+              <div class="detail-item reason">
+                <i class="fas fa-notes-medical"></i>
+                <span>{{ appointment.reasonForVisit }}</span>
+              </div>
+            </div>
+  
+            <div class="appointment-actions" *ngIf="appointment.status !== 'completed' && appointment.status !== 'cancelled'">
+              <button 
+                *ngIf="appointment.status === 'pending'"
+                class="btn-confirm" 
+                (click)="confirmAppointment(appointment.id)"
+              >
+                <i class="fas fa-check"></i>
+                Confirm
+              </button>
+              <button 
+                class="btn-complete" 
+                (click)="completeAppointment(appointment.id)"
+              >
+                <i class="fas fa-check-double"></i>
+                Complete
+              </button>
+              <button 
+                class="btn-cancel" 
+                (click)="cancelAppointment(appointment.id)"
+              >
+                <i class="fas fa-times"></i>
+                Cancel
+              </button>
+            </div>
+          </div>
+  
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="filteredAppointments.length === 0">
+            <i class="fas fa-calendar-times"></i>
+            <h3>No Appointments Found</h3>
+            <p>No appointments match your current filters.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

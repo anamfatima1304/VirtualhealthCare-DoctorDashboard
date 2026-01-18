@@ -1,0 +1,83 @@
+<div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-header">
+        <i class="fas fa-user-md admin-icon"></i>
+        <h2 class="title">Doctor Login</h2>
+        <p class="subtitle">Sign in to access your dashboard</p>
+      </div>
+  
+      <!-- Error Message -->
+      <div class="error-box" *ngIf="errorMessage">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ errorMessage }}
+      </div>
+  
+      <!-- Success Message -->
+      <div class="success-box" *ngIf="successMessage">
+        <i class="fas fa-check-circle"></i>
+        {{ successMessage }}
+      </div>
+  
+      <form (ngSubmit)="onLogin()">
+        <!-- Username -->
+        <div class="input-group">
+          <label>Username</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user input-icon"></i>
+            <input
+              type="text"
+              [(ngModel)]="loginData.username"
+              name="username"
+              placeholder="Enter your username"
+              required
+              [disabled]="loading"
+            />
+          </div>
+        </div>
+  
+        <!-- Password -->
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              [(ngModel)]="loginData.password"
+              name="password"
+              placeholder="Enter your password"
+              required
+              [disabled]="loading"
+            />
+            <i 
+              [class]="showPassword ? 'fas fa-eye password-toggle-icon' : 'fas fa-eye-slash password-toggle-icon'"
+              (click)="togglePasswordVisibility()"
+            ></i>
+          </div>
+        </div>
+  
+        <!-- Forgot Password -->
+        <div class="forgot-password-wrapper">
+          <a class="forgot-password-link" (click)="onForgotPassword()">
+            Forgot Password?
+          </a>
+        </div>
+  
+        <!-- Submit Button -->
+        <button class="login-btn" type="submit" [disabled]="loading">
+          <span *ngIf="!loading">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+          </span>
+          <span *ngIf="loading">
+            <i class="fas fa-spinner fa-spin"></i> Signing In...
+          </span>
+        </button>
+      </form>
+  
+      <div class="login-footer">
+        <p class="info-text">
+          <i class="fas fa-info-circle"></i>
+          Doctor access only. Contact admin for assistance.
+        </p>
+      </div>
+    </div>
+  </div>

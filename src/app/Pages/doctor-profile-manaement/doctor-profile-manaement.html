@@ -1,0 +1,243 @@
+<div class="profile-container">
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading your profile...</p>
+    </div>
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="!loading && doctor">
+    <!-- Header Section -->
+    <div class="profile-header">
+      <button class="back-btn" (click)="goToDashboard()">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+      </button>
+      
+      <div class="header-actions" *ngIf="hasChanges">
+        <button class="btn-cancel" (click)="cancelChanges()" [disabled]="saving">
+          <i class="fas fa-times"></i>
+          Cancel
+        </button>
+        <button class="btn-save" (click)="saveChanges()" [disabled]="saving">
+          <i class="fas" [class.fa-spinner]="saving" [class.fa-spin]="saving" [class.fa-save]="!saving"></i>
+          {{ saving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <!-- Doctor Info Section -->
+      <div class="doctor-info-section">
+        <!-- Profile Image with Upload -->
+        <div class="doctor-image-wrapper">
+          <div class="image-container">
+            <img [src]="doctor.image" [alt]="doctor.name" class="doctor-profile-image">
+            <label class="image-upload-overlay" for="imageUpload">
+              <i class="fas fa-camera"></i>
+            </label>
+            <input 
+              type="file" 
+              id="imageUpload" 
+              accept="image/*" 
+              (change)="onImageSelect($event)"
+              style="display: none;"
+            />
+          </div>
+        </div>
+
+        <!-- Editable Doctor Details -->
+        <div class="doctor-details">
+          <!-- Name -->
+          <div class="editable-field">
+            <input 
+              type="text" 
+              class="doctor-name-input" 
+              [(ngModel)]="doctor.name"
+              (ngModelChange)="onFieldChange()"
+              placeholder="Your Name"
+            />
+          </div>
+
+          <!-- Specialty (Read-only) -->
+          <p class="doctor-specialty">{{ doctor.specialty }}</p>
+
+          <!-- Quick Info -->
+          <div class="quick-info">
+            <div class="info-item editable">
+              <strong>Education:</strong>
+              <input 
+                type="text" 
+                class="info-input"
+                [(ngModel)]="doctor.education"
+                (ngModelChange)="onFieldChange()"
+                placeholder="Your education"
+              />
+            </div>
+            <div class="info-item editable">
+              <strong>Experience:</strong>
+              <input 
+                type="text" 
+                class="info-input"
+                [(ngModel)]="doctor.experience"
+                (ngModelChange)="onFieldChange()"
+                placeholder="Years of experience"
+              />
+            </div>
+            <div class="info-item editable">
+              <strong>Consultation Fee:</strong>
+              <input 
+                type="text" 
+                class="info-input"
+                [(ngModel)]="doctor.consultationFee"
+                (ngModelChange)="onFieldChange()"
+                placeholder="Consultation fee"
+              />
+            </div>
+          </div>
+
+          <!-- About -->
+          <div class="about-section">
+            <h3>About</h3>
+            <textarea 
+              class="bio-textarea"
+              [(ngModel)]="doctor.shortBio"
+              (ngModelChange)="onFieldChange()"
+              placeholder="Write a short bio about yourself..."
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Available Timings Section -->
+      <div class="timings-section">
+        <div class="timings-header">
+          <h3 class="section-title">
+            <i class="fas fa-clock"></i>
+            Available Timings
+          </h3>
+          <button 
+            class="btn-edit-timings" 
+            (click)="toggleTimingsEdit()"
+            *ngIf="!isEditingTimings"
+          >
+            <i class="fas fa-edit"></i>
+            Edit Timings
+          </button>
+          <div class="timings-actions" *ngIf="isEditingTimings">
+            <button 
+              class="btn-cancel-timings" 
+              (click)="toggleTimingsEdit()"
+              [disabled]="savingTimings"
+            >
+              <i class="fas fa-times"></i>
+              Cancel
+            </button>
+            <button 
+              class="btn-save-timings" 
+              (click)="saveTimings()"
+              [disabled]="savingTimings"
+            >
+              <i class="fas" [class.fa-spinner]="savingTimings" [class.fa-spin]="savingTimings" [class.fa-check]="!savingTimings"></i>
+              {{ savingTimings ? 'Saving...' : 'Save' }}
+            </button>
+          </div>
+        </div>
+        
+        <!-- VIEW MODE -->
+        <div class="schedule-list" *ngIf="!isEditingTimings">
+          <div 
+            *ngFor="let day of weekDays" 
+            class="schedule-item"
+            [class.unavailable]="!isDayAvailable(day)"
+          >
+            <div class="day-label">{{ day }}</div>
+            <div class="timing-info">
+              <div *ngIf="isDayAvailable(day)" class="available-times">
+                <span 
+                  *ngFor="let timeSlot of getTimeSlotsForDay(day)" 
+                  class="time-slot"
+                >
+                  {{ timeSlot.display }}
+                </span>
+              </div>
+              <div *ngIf="!isDayAvailable(day)" class="unavailable-text">
+                Not Available
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EDIT MODE -->
+        <div class="schedule-list-edit" *ngIf="isEditingTimings">
+          <div 
+            *ngFor="let day of weekDays" 
+            class="schedule-item-edit"
+            [class.has-slots]="isDayAvailable(day)"
+          >
+            <div class="day-header">
+              <div class="day-label">{{ day }}</div>
+              <button 
+                class="btn-add-slot" 
+                (click)="addTimeSlot(day)"
+                title="Add time slot"
+              >
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            
+            <div class="timing-info">
+              <div *ngIf="isDayAvailable(day)" class="time-slots-list">
+                <div 
+                  *ngFor="let timeSlot of getTimeSlotsForDay(day); let i = index" 
+                  class="time-slot-edit"
+                >
+                  <div class="time-inputs">
+                    <input 
+                      type="time" 
+                      class="time-input"
+                      [(ngModel)]="timeSlot.startTime"
+                      (ngModelChange)="updateTimeSlotDisplay(day, i)"
+                    />
+                    <span class="time-separator">-</span>
+                    <input 
+                      type="time" 
+                      class="time-input"
+                      [(ngModel)]="timeSlot.endTime"
+                      (ngModelChange)="updateTimeSlotDisplay(day, i)"
+                    />
+                  </div>
+                  <button 
+                    class="btn-remove-slot" 
+                    (click)="removeTimeSlot(day, i)"
+                    title="Remove time slot"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div *ngIf="!isDayAvailable(day)" class="unavailable-text">
+                Not Available - Click + to add time slots
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="!doctor && !loading">
+    <div class="error-content">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h3>Profile Not Found</h3>
+      <p>Unable to load your profile. Please try again.</p>
+      <button class="btn-back" (click)="goToDashboard()">
+        Back to Dashboard
+      </button>
+    </div>
+  </div>
+</div>
