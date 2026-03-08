@@ -5,6 +5,7 @@ import { Appointment, AppointmentsService } from '../../Data/appointments.servic
 
 @Component({
   selector: 'app-dashboard-component',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard-component.html',
   styleUrl: './dashboard-component.css',
@@ -24,8 +25,7 @@ export class DashboardComponent implements OnInit {
   };
   
   selectedFilter: 'all' | 'today' | 'pending' | 'confirmed' | 'completed' = 'all';
-  selectedPriority: 'all' | 'high' | 'medium' | 'low' = 'all';
-  
+  selectedPriority: string = 'all'; 
   loading = true;
   
   constructor(
@@ -54,22 +54,21 @@ export class DashboardComponent implements OnInit {
   }
 
   loadDashboardData(): void {
-    if (!this.doctorData) {
-      return;
-    }
+    // Dynamically uses the ID from login data
+    if (!this.doctorData || !this.doctorData.doctorId) return;
 
     this.loading = true;
-    const doctorId = this.doctorData.doctorId || 1;
+    const doctorId = this.doctorData.doctorId; 
     
     this.appointmentsService.getAppointmentsByDoctor(doctorId).subscribe({
-      next: (data) => {
+      next: (data: any) => {
         this.appointments = data;
         this.applyFilters();
-        this.loadStats();
+        this.loadStats(doctorId);
         this.loading = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error loading appointments:', err);
         this.loading = false;
         this.cdr.detectChanges();
@@ -77,19 +76,14 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  loadStats(): void {
-    if (!this.doctorData) {
-      return;
-    }
-
-    const doctorId = this.doctorData.doctorId || 1;
+  loadStats(doctorId: number): void {
     this.appointmentsService.getAppointmentCounts(doctorId).subscribe({
-      next: (counts) => {
-        this.stats = {
-          total: counts.total,
-          pending: counts.pending,
-          confirmed: counts.confirmed,
-          completed: counts.completed
+      next: (counts: any) => {
+        this.stats = { 
+          total: counts.total || 0,
+          pending: counts.pending || 0,
+          confirmed: counts.confirmed || 0,
+          completed: counts.completed || 0
         };
         this.cdr.detectChanges();
       }
@@ -101,98 +95,76 @@ export class DashboardComponent implements OnInit {
     
     if (this.selectedFilter === 'today') {
       const today = new Date().toISOString().split('T')[0];
-      filtered = filtered.filter(app => app.appointmentDate === today);
+      filtered = filtered.filter(app => {
+        const appDate = new Date(app.appointmentDate).toISOString().split('T')[0];
+        return appDate === today;
+      });
     } else if (this.selectedFilter !== 'all') {
-      filtered = filtered.filter(app => app.status === this.selectedFilter);
+      filtered = filtered.filter(app => app.status.toLowerCase() === this.selectedFilter.toLowerCase());
     }
     
     if (this.selectedPriority !== 'all') {
-      filtered = filtered.filter(app => app.priority === this.selectedPriority);
+      filtered = filtered.filter(app => app.priority.toLowerCase() === this.selectedPriority.toLowerCase());
     }
-    
-    filtered.sort((a, b) => {
-      const dateA = new Date(`${a.appointmentDate} ${a.appointmentTime}`);
-      const dateB = new Date(`${b.appointmentDate} ${b.appointmentTime}`);
-      return dateA.getTime() - dateB.getTime();
-    });
     
     this.filteredAppointments = filtered;
   }
 
-  setFilter(filter: 'all' | 'today' | 'pending' | 'confirmed' | 'completed'): void {
+  // --- Actions that call the Update Status Route ---
+  confirmAppointment(id: number): void {
+    this.appointmentsService.confirmAppointment(id).subscribe(() => this.loadDashboardData());
+  }
+
+  completeAppointment(id: number): void {
+    this.appointmentsService.completeAppointment(id).subscribe(() => this.loadDashboardData());
+  }
+
+  cancelAppointment(id: number): void {
+    if(confirm("Are you sure you want to cancel?")) {
+      this.appointmentsService.cancelAppointment(id).subscribe(() => this.loadDashboardData());
+    }
+  }
+
+  // --- Helpers & UI ---
+  setFilter(filter: any): void {
     this.selectedFilter = filter;
     this.applyFilters();
   }
 
-  setPriorityFilter(priority: 'all' | 'high' | 'medium' | 'low'): void {
+  setPriorityFilter(priority: string): void {
     this.selectedPriority = priority;
     this.applyFilters();
   }
 
-  confirmAppointment(appointmentId: number): void {
-    this.appointmentsService.confirmAppointment(appointmentId).subscribe({
-      next: () => {
-        this.loadDashboardData();
-      },
-      error: (err) => {
-        console.error('Error confirming appointment:', err);
-      }
-    });
+  formatTime(time: string): string {
+    if (!time) return '';
+    if (time.includes('AM') || time.includes('PM')) return time;
+    const [hours, minutes] = time.split(':');
+    let h = parseInt(hours);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h}:${minutes} ${ampm}`;
   }
 
-  completeAppointment(appointmentId: number): void {
-    this.appointmentsService.completeAppointment(appointmentId).subscribe({
-      next: () => {
-        this.loadDashboardData();
-      },
-      error: (err) => {
-        console.error('Error completing appointment:', err);
-      }
-    });
-  }
-
-  cancelAppointment(appointmentId: number): void {
-    if (confirm('Are you sure you want to cancel this appointment?')) {
-      this.appointmentsService.cancelAppointment(appointmentId).subscribe({
-        next: () => {
-          this.loadDashboardData();
-        },
-        error: (err) => {
-          console.error('Error cancelling appointment:', err);
-        }
-      });
-    }
-  }
-
-  getPriorityClass(priority: string): string {
-    return `priority-${priority}`;
-  }
-
-  getStatusClass(status: string): string {
-    return `status-${status}`;
-  }
-
-  formatDate(date: string): string {
+  formatDate(date: any): string {
     const d = new Date(date);
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
-  formatTime(time: string): string {
-    const [hours, minutes] = time.split(':');
-    const h = parseInt(hours);
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    const displayHour = h % 12 || 12;
-    return `${displayHour}:${minutes} ${ampm}`;
+  getPriorityClass(priority: string): string {
+    return `priority-${priority?.toLowerCase() || 'normal'}`;
   }
 
-  logout(): void {
-    if (this.isBrowser) {
-      localStorage.removeItem('doctorData');
-    }
-    this.router.navigate(['/doctor/login']);
+  getStatusClass(status: string): string {
+    return `status-${status?.toLowerCase() || 'pending'}`;
   }
 
   goToProfile(): void {
     this.router.navigate(['/doctor/profile']);
+  }
+
+  logout(): void {
+    if (this.isBrowser) localStorage.removeItem('doctorData');
+    this.router.navigate(['/doctor/login']);
   }
 }
