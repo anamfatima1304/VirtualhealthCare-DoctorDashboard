@@ -27,7 +27,7 @@ export interface TimeSlot {
   providedIn: 'root'
 })
 export class DoctorsService {
-  private apiUrl = 'http://localhost:3000/api/doctors';
+  private apiUrl = 'http://20.13.9.186/hospital/api/doctors';
   
   // Keep local data as fallback
   private localDoctors: Doctor[] = [

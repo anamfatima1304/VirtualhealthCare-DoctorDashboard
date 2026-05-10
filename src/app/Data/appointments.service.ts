@@ -21,7 +21,7 @@ export interface Appointment {
 })
 export class AppointmentsService {
   
-  private apiUrl = 'http://localhost:3000/api/appointments'; 
+  private apiUrl = 'http://20.13.9.186/hospital/api/appointments'; 
 
   constructor(private http: HttpClient) {}
 
