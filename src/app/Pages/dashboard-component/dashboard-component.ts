@@ -54,7 +54,6 @@ export class DashboardComponent implements OnInit {
   }
 
   loadDashboardData(): void {
-    // Dynamically uses the ID from login data
     if (!this.doctorData || !this.doctorData.doctorId) return;
 
     this.loading = true;
@@ -106,7 +105,39 @@ export class DashboardComponent implements OnInit {
     if (this.selectedPriority !== 'all') {
       filtered = filtered.filter(app => app.priority.toLowerCase() === this.selectedPriority.toLowerCase());
     }
-    
+
+    // ✅ Sort by date + time ascending (nearest appointment shows first)
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.appointmentDate);
+      const dateB = new Date(b.appointmentDate);
+
+      const parseTime = (time: string): { h: number; m: number } => {
+        if (!time) return { h: 0, m: 0 };
+
+        // Handle "9:00 AM" / "10:00 PM" format
+        if (time.includes('AM') || time.includes('PM')) {
+          const [timePart, meridiem] = time.trim().split(' ');
+          let [h, m] = timePart.split(':').map(Number);
+          if (meridiem === 'PM' && h !== 12) h += 12;
+          if (meridiem === 'AM' && h === 12) h = 0;
+          return { h, m };
+        }
+
+        // Handle "14:30" 24-hour format
+        const [h, m] = time.split(':').map(Number);
+        return { h, m };
+      };
+
+      const tA = parseTime(a.time);
+      const tB = parseTime(b.time);
+
+      // Combine date + time into one comparable timestamp
+      dateA.setHours(tA.h, tA.m, 0, 0);
+      dateB.setHours(tB.h, tB.m, 0, 0);
+
+      return dateB.getTime() - dateA.getTime(); // descending = latest first
+    });
+
     this.filteredAppointments = filtered;
   }
 
