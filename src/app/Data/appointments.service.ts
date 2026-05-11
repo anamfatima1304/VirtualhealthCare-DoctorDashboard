@@ -21,7 +21,7 @@ export interface Appointment {
 })
 export class AppointmentsService {
   
-  private apiUrl = 'http://20.13.9.186.nip.io/hospital/api/appointments'; 
+  private apiUrl = 'https://20-13-9-186.nip.io/hospital/api/appointments'; 
 
   constructor(private http: HttpClient) {}
 
